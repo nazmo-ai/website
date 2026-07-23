@@ -9,7 +9,7 @@ const FEATURES = [
     icon: '✨',
     title: 'AI-powered orchestration',
     description:
-      'Describe the outcome you want in plain language. Nazmo AI assembles, configures, and wires the service chain for you.',
+      'Describe the outcome you want in plain language. Nazmo.AI assembles, configures, and wires the service chain for you.',
   },
   {
     icon: '🚫',
@@ -46,7 +46,7 @@ export default function Features() {
             <span className="eyebrow justify-content-center">Features</span>
             <h2 className="display-6">Everything to orchestrate, nothing to write</h2>
             <p className="text-muted fs-5 mt-3">
-              Nazmo AI replaces config files and glue scripts with a canvas an
+              Nazmo.AI replaces config files and glue scripts with a canvas an
               AI can actually reason about.
             </p>
           </div>

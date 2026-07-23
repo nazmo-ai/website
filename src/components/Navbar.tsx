@@ -28,7 +28,7 @@ export default function Navbar() {
               strokeLinecap="round"
             />
           </svg>
-          Nazmo AI
+          Nazmo.AI
         </a>
         <button
           className="navbar-toggler"

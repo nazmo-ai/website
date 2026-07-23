@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="container">
         <div className="row align-items-center gy-3">
           <div className="col-md-6">
-            <div className="nz-brand mb-1">Nazmo AI</div>
+            <div className="nz-brand mb-1">Nazmo.AI</div>
             <p className="text-muted mb-0">Poetry in Cloud — orchestrating cloud poetry.</p>
           </div>
           <div className="col-md-6 text-md-end">
@@ -17,7 +17,7 @@ export default function Footer() {
         </div>
         <hr className="my-4" style={{ borderColor: 'var(--nz-border)' }} />
         <p className="text-muted small mb-0">
-          &copy; {new Date().getFullYear()} Nazmo AI. All rights reserved.
+          &copy; {new Date().getFullYear()} Nazmo.AI. All rights reserved.
         </p>
       </div>
     </footer>

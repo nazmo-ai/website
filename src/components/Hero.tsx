@@ -23,7 +23,7 @@ export default function Hero() {
               <span className="gradient-text">like poetry</span>
             </h1>
             <p className="fs-5 text-muted mb-4" style={{ maxWidth: '34rem' }}>
-              Nazmo AI lets you design, connect, and run multi-cloud service
+              Nazmo.AI lets you design, connect, and run multi-cloud service
               chains on a visual canvas. Describe your intent, let AI wire the
               services together, and skip the Infrastructure-as-Code entirely.
             </p>

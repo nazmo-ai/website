@@ -18,7 +18,7 @@ export default function EarlyAccess() {
             <span className="eyebrow justify-content-center">Early access</span>
             <h2 className="display-6 mb-3">Be the first to orchestrate</h2>
             <p className="text-muted fs-5 mb-4">
-              Nazmo AI is in private beta. Join the waitlist and we&rsquo;ll
+              Nazmo.AI is in private beta. Join the waitlist and we&rsquo;ll
               reach out as seats open up.
             </p>
 

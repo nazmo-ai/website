@@ -15,4 +15,4 @@ fi
 
 docker compose up -d --build
 
-echo "Nazmo AI is running at http://localhost:8080"
+echo "Nazmo.AI is running at http://localhost:8080"

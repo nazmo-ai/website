@@ -7,7 +7,7 @@ const STEPS = [
   {
     title: 'Describe',
     description:
-      'Tell Nazmo AI what the chain should do in plain language. It fills in the connections and configuration.',
+      'Tell Nazmo.AI what the chain should do in plain language. It fills in the connections and configuration.',
   },
   {
     title: 'Orchestrate',

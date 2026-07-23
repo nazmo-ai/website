@@ -1,4 +1,4 @@
-# Running Nazmo AI
+# Running Nazmo.AI
 
 ## Requirements
 
