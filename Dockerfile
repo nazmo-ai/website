@@ -8,6 +8,13 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
+
+# Vite inlines env vars at build time, so the endpoint must be present here
+# rather than at container start. Empty by default: the site then renders the
+# waitlist as closed instead of shipping a form that discards signups.
+ARG VITE_WAITLIST_ENDPOINT=""
+ENV VITE_WAITLIST_ENDPOINT=$VITE_WAITLIST_ENDPOINT
+
 RUN npm run build
 
 # ---- Serve stage ------------------------------------------------------------

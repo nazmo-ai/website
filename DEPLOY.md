@@ -112,12 +112,30 @@ signup spreadsheet. There is no backend and no service-account key.
    - *Execute as*: **Me**
    - *Who has access*: **Anyone**
 5. Authorise when prompted, then copy the deployment's `/exec` URL.
-6. Provide it to the build as `VITE_WAITLIST_ENDPOINT`:
+6. Copy `.env.example` to `.env` and put the URL in it:
 
    ```bash
-   # .env.local for dev, or the host's env-var settings for production
+   cp .env.example .env
+   # then edit:
    VITE_WAITLIST_ENDPOINT=https://script.google.com/macros/s/AKfy.../exec
    ```
+
+   One file covers both paths: Vite reads `.env` for `npm run dev` and
+   `npm run build`, and docker compose reads it to fill the build arg. `.env` is
+   gitignored, and `.dockerignore` keeps it out of the image context — the value
+   reaches the Docker build as an explicit `--build-arg` instead.
+
+   Deploying without compose:
+
+   ```bash
+   docker build --build-arg VITE_WAITLIST_ENDPOINT="https://script.google.com/macros/s/AKfy.../exec" -t nazmo-ai-website .
+   ```
+
+   On Vercel/Netlify/Cloudflare, set `VITE_WAITLIST_ENDPOINT` in the host's
+   environment-variable settings.
+
+   > The value is inlined into the JavaScript bundle at **build** time, not read
+   > at container start. Changing it means rebuilding.
 
 The script creates a `Waitlist` tab on first submission with these columns, and
 skips addresses already on the list:

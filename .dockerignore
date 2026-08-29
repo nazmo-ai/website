@@ -1,6 +1,11 @@
 node_modules
 dist
 .git
+# Passed explicitly as a build arg instead, so local config never leaks
+# into an image by accident.
+.env
+.env.*
+!.env.example
 .idea
 .vscode
 *.log

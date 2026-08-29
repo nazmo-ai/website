@@ -1,6 +1,10 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      args:
+        # Taken from .env in this directory, or the host environment.
+        VITE_WAITLIST_ENDPOINT: "${VITE_WAITLIST_ENDPOINT:-}"
     container_name: nazmo-ai-website
     ports:
       - "8080:80"
