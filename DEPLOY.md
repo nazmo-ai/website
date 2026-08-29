@@ -131,11 +131,43 @@ signup spreadsheet. There is no backend and no service-account key.
    docker build --build-arg VITE_WAITLIST_ENDPOINT="https://script.google.com/macros/s/AKfy.../exec" -t nazmo-ai-website .
    ```
 
-   On Vercel/Netlify/Cloudflare, set `VITE_WAITLIST_ENDPOINT` in the host's
-   environment-variable settings.
-
    > The value is inlined into the JavaScript bundle at **build** time, not read
    > at container start. Changing it means rebuilding.
+
+### On Vercel
+
+`.env` is gitignored, so Vercel never receives it. Set the variable in the
+dashboard instead:
+
+1. **Project Settings → Environment Variables**
+2. Add `VITE_WAITLIST_ENDPOINT` with the `/exec` URL as its value
+3. Tick **Production**, **Preview** and **Development** — otherwise preview
+   deploys render the waitlist closed
+4. **Redeploy**, with *Use existing Build Cache* unchecked
+
+Step 4 is not optional. Vite bakes the value in at build time, so deployments
+that already exist keep the old empty value; adding the variable changes nothing
+until a fresh build runs.
+
+Vercel auto-detects the rest (framework Vite, build `npm run build`, output
+`dist`). No `vercel.json` is needed — the site is a single route with hash
+anchors, so there is no SPA rewrite to configure.
+
+`vercel env pull .env` fetches the value back down for local work.
+
+Netlify and Cloudflare Pages follow the same shape: set the variable in the
+host's build environment, then trigger a rebuild.
+
+> **`VITE_`-prefixed variables are public by design.** Vite exposes only that
+> prefix to client code, and the value is readable in the shipped bundle. That
+> is required here, since the browser performs the POST. Never put an actual
+> secret behind a `VITE_` prefix.
+
+### Confirming it worked
+
+Open the deployed site and look at the Early Access section. If it shows the
+form, the variable reached the build; if it shows "The waitlist opens shortly",
+it did not. Then submit once and confirm the row lands in the sheet.
 
 The script creates a `Waitlist` tab on first submission with these columns, and
 skips addresses already on the list:
