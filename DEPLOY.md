@@ -119,12 +119,29 @@ signup spreadsheet. There is no backend and no service-account key.
    VITE_WAITLIST_ENDPOINT=https://script.google.com/macros/s/AKfy.../exec
    ```
 
-The script creates a `Waitlist` tab with headers on first submission, and skips
-addresses already on the list.
+The script creates a `Waitlist` tab on first submission with these columns, and
+skips addresses already on the list:
 
-**If the variable is unset**, the form is replaced by a "waitlist opens shortly"
-notice, so the site never ships a form that silently drops emails. This is the
-current state.
+| Timestamp | Name | Company | Role | Job location | Email | Phone | Source |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+
+Name, company, role, job location and email are required; phone is optional.
+
+**If the variable is unset — or is not a well-formed Apps Script `/exec` URL —**
+the form is replaced by a "waitlist opens shortly" notice, so the site never
+ships a form that silently drops signups. This is the current state.
+
+The URL shape is checked deliberately. A cross-origin 404 carries no CORS
+headers, so `fetch` throws rather than reporting a failure status, and the
+opaque retry below would then look like a successful signup. Rejecting a
+malformed URL up front turns the most likely misconfiguration into a visible
+closed state instead of a form that quietly discards everything.
+
+> **After deploying, submit the form once and confirm the row appears in the
+> sheet.** A URL that is well-formed but points at an undeployed or
+> wrongly-permissioned script can still report success to the visitor while
+> saving nothing — the browser is not allowed to read the real response. The
+> browser console logs a warning whenever the response was unreadable.
 
 > ⚠️ **The endpoint is public.** It ships in the client bundle and anyone who
 > reads it can POST to it. A honeypot field, a 2.5s minimum form dwell time, and

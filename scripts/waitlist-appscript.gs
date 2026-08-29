@@ -14,7 +14,19 @@ var SHEET_NAME = 'Waitlist'
 /** Must match MIN_DWELL_MS in src/lib/waitlist.ts. */
 var MIN_DWELL_MS = 2500
 
-var HEADERS = ['Timestamp', 'Email', 'Name', 'Company', 'Use case', 'Source']
+var HEADERS = [
+  'Timestamp',
+  'Name',
+  'Company',
+  'Role',
+  'Job location',
+  'Email',
+  'Phone',
+  'Source',
+]
+
+/** Fields the website marks required. Phone is deliberately not among them. */
+var REQUIRED = ['name', 'company', 'role', 'location', 'email']
 
 function doPost(e) {
   try {
@@ -30,9 +42,20 @@ function doPost(e) {
       return json({ ok: false, error: 'too_fast' })
     }
 
-    var email = String(params.email || '').trim()
+    for (var i = 0; i < REQUIRED.length; i++) {
+      if (clean(params[REQUIRED[i]]) === '') {
+        return json({ ok: false, error: 'missing_' + REQUIRED[i] })
+      }
+    }
+
+    var email = clean(params.email)
     if (!isValidEmail(email)) {
       return json({ ok: false, error: 'invalid_email' })
+    }
+
+    var phone = clean(params.phone)
+    if (phone !== '' && !isValidPhone(phone)) {
+      return json({ ok: false, error: 'invalid_phone' })
     }
 
     var sheet = getSheet()
@@ -42,10 +65,12 @@ function doPost(e) {
 
     sheet.appendRow([
       new Date(),
+      clean(params.name),
+      clean(params.company),
+      clean(params.role),
+      clean(params.location),
       email,
-      String(params.name || '').trim().slice(0, 200),
-      String(params.company || '').trim().slice(0, 200),
-      String(params.useCase || '').trim().slice(0, 200),
+      phone,
       'website',
     ])
 
@@ -73,11 +98,14 @@ function getSheet() {
   return sheet
 }
 
+/** Email lives in column 6; keep this in step with HEADERS. */
+var EMAIL_COLUMN = 6
+
 function isDuplicate(sheet, email) {
   var lastRow = sheet.getLastRow()
   if (lastRow < 2) return false
 
-  var existing = sheet.getRange(2, 2, lastRow - 1, 1).getValues()
+  var existing = sheet.getRange(2, EMAIL_COLUMN, lastRow - 1, 1).getValues()
   var needle = email.toLowerCase()
   for (var i = 0; i < existing.length; i++) {
     if (String(existing[i][0]).trim().toLowerCase() === needle) return true
@@ -85,8 +113,19 @@ function isDuplicate(sheet, email) {
   return false
 }
 
+function clean(value) {
+  return String(value || '').trim().slice(0, 200)
+}
+
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) && email.length <= 254
+}
+
+/** Permissive on formatting, strict only on digit count. */
+function isValidPhone(phone) {
+  if (!/^[\d\s+()./-]+$/.test(phone)) return false
+  var digits = phone.replace(/\D/g, '').length
+  return digits >= 7 && digits <= 15
 }
 
 function json(payload) {
