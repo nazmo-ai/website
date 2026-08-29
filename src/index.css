@@ -282,6 +282,10 @@ h1, h2, h3, h4 {
   z-index: 3;
 }
 
+.dot-map-tooltip.is-below {
+  transform: translate(-50%, 14px);
+}
+
 .dot-map-tooltip-swatch {
   width: 0.5rem;
   height: 0.5rem;
@@ -292,6 +296,9 @@ h1, h2, h3, h4 {
 .dot-map-tooltip-code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dot-map-tooltip-sep {
@@ -300,6 +307,62 @@ h1, h2, h3, h4 {
 
 .dot-map-tooltip-provider {
   color: var(--nz-text-muted);
+}
+
+/* Cluster form: one card listing every provider sharing the metro. */
+.dot-map-tooltip.is-cluster {
+  display: block;
+  padding: 0.55rem 0.7rem 0.5rem;
+  min-width: 13rem;
+  /* Capped so the clamp in RegionTooltip can keep an edge metro on screen;
+     long codes like australia-southeast1 would otherwise push it to ~273px. */
+  max-width: 16rem;
+}
+
+.dot-map-tooltip-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.35rem;
+  border-bottom: 1px solid var(--nz-border);
+}
+
+.dot-map-tooltip-count {
+  font-weight: 500;
+  font-size: 0.68rem;
+  color: var(--nz-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.dot-map-tooltip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.12rem;
+}
+
+.dot-map-tooltip-list li {
+  display: grid;
+  grid-template-columns: 0.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.16rem 0.3rem;
+  border-radius: 4px;
+  line-height: 1.3;
+}
+
+.dot-map-tooltip-list li.is-active {
+  background: color-mix(in srgb, var(--nz-accent-1) 16%, transparent);
+}
+
+.dot-map-tooltip-list .dot-map-tooltip-provider {
+  font-size: 0.7rem;
 }
 
 .hero-scrim {

@@ -4,12 +4,17 @@ import {
   INFLUENCE_RADIUS,
   MAX_DISPLACEMENT,
   buildIndex,
+  clusterByProximity,
   computeTransform,
   ease,
   falloff,
+  fanOffset,
+  fanRadius,
   magnify,
   projectRef,
+  regionRenderPosition,
 } from './dotField'
+import { REGION_DOT_RADIUS } from './renderDotMap'
 
 describe('projectRef', () => {
   it('maps the antimeridian to the horizontal edges', () => {
@@ -163,5 +168,101 @@ describe('buildIndex', () => {
     const index = buildIndex(items)
     const found = index.query(11, 10, 20).map((i) => i.id).sort()
     expect(found).toEqual(['a', 'b'])
+  })
+})
+
+describe('clusterByProximity', () => {
+  it('leaves isolated points alone, in their own clusters', () => {
+    const result = clusterByProximity([{ x: 0, y: 0 }, { x: 500, y: 500 }], 7)
+    expect(result.every((r) => r.clusterSize === 1 && r.clusterIndex === 0)).toBe(true)
+    expect(result[0].clusterId).not.toBe(result[1].clusterId)
+  })
+
+  it('gives every member of a group the same cluster id', () => {
+    const result = clusterByProximity([{ x: 10, y: 10 }, { x: 10, y: 10 }, { x: 400, y: 9 }], 7)
+    expect(result[0].clusterId).toBe(result[1].clusterId)
+    expect(result[2].clusterId).not.toBe(result[0].clusterId)
+  })
+
+  it('groups points sharing a spot and indexes them distinctly', () => {
+    const result = clusterByProximity(
+      [{ x: 10, y: 10 }, { x: 10, y: 10 }, { x: 12, y: 11 }],
+      7,
+    )
+    expect(result.every((r) => r.clusterSize === 3)).toBe(true)
+    expect(result.map((r) => r.clusterIndex).sort()).toEqual([0, 1, 2])
+  })
+
+  it('keeps points just beyond the threshold separate', () => {
+    const result = clusterByProximity([{ x: 0, y: 0 }, { x: 8, y: 0 }], 7)
+    expect(result.every((r) => r.clusterSize === 1)).toBe(true)
+  })
+
+  it('assigns every input exactly one slot', () => {
+    const points = Array.from({ length: 40 }, (_, i) => ({ x: (i % 4) * 2, y: 0 }))
+    const result = clusterByProximity(points, 7)
+    expect(result).toHaveLength(points.length)
+    for (const r of result) expect(r.clusterIndex).toBeLessThan(r.clusterSize)
+  })
+})
+
+describe('fanOffset', () => {
+  it('does not move a region that stands alone', () => {
+    expect(fanOffset(0, 1, 0)).toEqual({ x: 0, y: 0 })
+    expect(fanOffset(0, 1, 1)).toEqual({ x: 0, y: 0 })
+  })
+
+  it('separates every member of a cluster at rest', () => {
+    // The bug this fixes: six providers at one metro rendered as one dot.
+    const size = 6
+    const points = Array.from({ length: size }, (_, i) => fanOffset(i, size, 0))
+    for (let a = 0; a < size; a++) {
+      for (let b = a + 1; b < size; b++) {
+        const gap = Math.hypot(points[a].x - points[b].x, points[a].y - points[b].y)
+        expect(gap).toBeGreaterThan(REGION_DOT_RADIUS * 2)
+      }
+    }
+  })
+
+  it('blooms wider as cursor influence rises', () => {
+    const rest = Math.hypot(...Object.values(fanOffset(0, 6, 0)))
+    const hot = Math.hypot(...Object.values(fanOffset(0, 6, 1)))
+    expect(hot).toBeGreaterThan(rest * 2.5)
+  })
+
+  it('gives bigger clusters a wider rest circle', () => {
+    expect(fanRadius(6, 0)).toBeGreaterThan(fanRadius(2, 0))
+  })
+})
+
+describe('regionRenderPosition', () => {
+  const anchor = { x: 200, y: 200 }
+
+  it('leaves a solitary region at its anchor when the cursor is away', () => {
+    const p = regionRenderPosition({ ...anchor, clusterIndex: 0, clusterSize: 1 }, null, 0)
+    expect(p).toEqual({ x: 200, y: 200, intensity: 0 })
+  })
+
+  it('blooms every member of a cluster by the same intensity', () => {
+    const cursor = { x: 200, y: 200 }
+    const a = regionRenderPosition({ ...anchor, clusterIndex: 0, clusterSize: 4 }, cursor, 1)
+    const b = regionRenderPosition({ ...anchor, clusterIndex: 2, clusterSize: 4 }, cursor, 1)
+    expect(a.intensity).toBeCloseTo(b.intensity)
+    // Opposite sides of the rosette, so they must be far apart.
+    expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeGreaterThan(20)
+  })
+
+  it('never leaves two members of a cluster on top of each other', () => {
+    const cursor = { x: 260, y: 200 }
+    for (const presence of [0, 0.4, 1]) {
+      const seen = Array.from({ length: 5 }, (_, i) =>
+        regionRenderPosition({ ...anchor, clusterIndex: i, clusterSize: 5 }, cursor, presence),
+      )
+      for (let a = 0; a < seen.length; a++) {
+        for (let b = a + 1; b < seen.length; b++) {
+          expect(Math.hypot(seen[a].x - seen[b].x, seen[a].y - seen[b].y)).toBeGreaterThan(1)
+        }
+      }
+    }
   })
 })

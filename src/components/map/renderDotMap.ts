@@ -15,6 +15,7 @@ import {
   MAX_DISPLACEMENT,
   REGION_MAGNIFY,
   falloff,
+  regionRenderPosition,
   type Point,
 } from './dotField'
 
@@ -34,6 +35,12 @@ export interface RegionDot extends Point {
   city: string
   /** Desynchronises the breathing pulse across dots. */
   phase: number
+  /** Which co-located group this belongs to. */
+  clusterId: number
+  /** Position within its co-located group; drives the fan-out angle. */
+  clusterIndex: number
+  /** How many regions share this spot. 1 means it stands alone. */
+  clusterSize: number
 }
 
 /** Land dot positions in canvas CSS pixels, packed as [x0, y0, x1, y1, ...]. */
@@ -77,6 +84,8 @@ export interface FrameState {
   reducedMotion: boolean
   /** X position of the ambient sweep, or null when it is not running. */
   sweepX: number | null
+  /** Only this cluster opens its rosette; see regionRenderPosition. */
+  focusedCluster: number | null
 }
 
 /**
@@ -181,33 +190,26 @@ function drawRegions(
   const { cursor, presence, elapsed, reducedMotion } = state
 
   for (const dot of regions) {
-    if (dot.x < -8 || dot.y < -8 || dot.x > width + 8 || dot.y > height + 8) continue
+    if (dot.x < -32 || dot.y < -32 || dot.x > width + 32 || dot.y > height + 32) continue
 
-    let x = dot.x
-    let y = dot.y
-    let intensity = 0
-
-    if (cursor && radius > 1) {
-      const dx = dot.x - cursor.x
-      const dy = dot.y - cursor.y
-      const distance = Math.hypot(dx, dy)
-      intensity = falloff(distance, radius) * presence
-      if (intensity > 0) {
-        const push = distance > 0 ? (MAX_DISPLACEMENT * intensity) / distance : 0
-        x += dx * push
-        y += dy * push
-      }
-    }
+    // Shared with the hit test, so a bloomed dot is clickable where it appears.
+    const { x, y, intensity } = regionRenderPosition(
+      dot,
+      cursor,
+      presence,
+      radius,
+      dot.clusterId === state.focusedCluster,
+    )
 
     const pulse = reducedMotion ? 1 : 1 + 0.12 * Math.sin(elapsed / 1400 + dot.phase)
     const r = REGION_DOT_RADIUS * pulse * (1 + REGION_MAGNIFY * intensity)
     const color = colors.providers[dot.provider]
 
     if (intensity > 0.05) {
-      ctx.globalAlpha = intensity * 0.28
+      ctx.globalAlpha = intensity * 0.22
       ctx.fillStyle = color
       ctx.beginPath()
-      ctx.arc(x, y, r * 2.6, 0, Math.PI * 2)
+      ctx.arc(x, y, r * 1.8, 0, Math.PI * 2)
       ctx.fill()
     }
 
