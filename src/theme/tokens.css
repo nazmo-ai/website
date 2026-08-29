@@ -1,0 +1,98 @@
+/**
+ * Theme tokens.
+ *
+ * Light is the base definition on :root; dark overrides only what changes.
+ * Canvas and SVG visuals read these via getComputedStyle, so every colour the
+ * map or flow graph paints must be declared here rather than hard-coded.
+ */
+
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --nz-bg: #f7f8fc;
+  --nz-bg-alt: #eef1f8;
+  --nz-surface: #ffffff;
+  --nz-surface-raised: #ffffff;
+  --nz-border: rgba(15, 23, 42, 0.1);
+  --nz-border-strong: rgba(15, 23, 42, 0.18);
+  --nz-text: #0f172a;
+  --nz-text-muted: #5a6478;
+  --nz-accent-1: #6d4aff;
+  --nz-accent-2: #0891b2;
+  --nz-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.08);
+
+  /* Map */
+  --nz-map-land: rgba(15, 23, 42, 0.4);
+  --nz-map-land-hot: rgba(15, 23, 42, 0.7);
+  --nz-map-scrim: rgba(247, 248, 252, 0.74);
+
+  /* Flow graph */
+  --nz-flow-edge: rgba(15, 23, 42, 0.16);
+  --nz-flow-edge-active: #6d4aff;
+  --nz-flow-node: #ffffff;
+  --nz-flow-node-idle-border: rgba(15, 23, 42, 0.12);
+  --nz-flow-done: #0e9f6e;
+  --nz-flow-wait: #d97706;
+  --nz-flow-fail: #dc2626;
+  --nz-flow-human: #6d4aff;
+
+  /* Provider hues — darkened for contrast against a light ground */
+  --nz-provider-aws: #e07c00;
+  --nz-provider-azure: #0a84c4;
+  --nz-provider-gcp: #0e9f6e;
+  --nz-provider-alibaba: #db2777;
+  --nz-provider-oracle: #dc2626;
+  --nz-provider-ibm: #7c3aed;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --nz-bg: #0a0e17;
+  --nz-bg-alt: #0d1220;
+  --nz-surface: #10182b;
+  --nz-surface-raised: #141d33;
+  --nz-border: rgba(148, 163, 184, 0.14);
+  --nz-border-strong: rgba(148, 163, 184, 0.28);
+  --nz-text: #e7eaf3;
+  --nz-text-muted: #8b93a7;
+  --nz-accent-1: #7c5cff;
+  --nz-accent-2: #22d3ee;
+  --nz-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.45);
+
+  --nz-map-land: rgba(148, 163, 184, 0.52);
+  --nz-map-land-hot: rgba(226, 232, 240, 0.95);
+  --nz-map-scrim: rgba(10, 14, 23, 0.62);
+
+  --nz-flow-edge: rgba(148, 163, 184, 0.22);
+  --nz-flow-edge-active: #7c5cff;
+  --nz-flow-node: #131c30;
+  --nz-flow-node-idle-border: rgba(148, 163, 184, 0.18);
+  --nz-flow-done: #34d399;
+  --nz-flow-wait: #fbbf24;
+  --nz-flow-fail: #f87171;
+  --nz-flow-human: #a78bfa;
+
+  --nz-provider-aws: #ff9900;
+  --nz-provider-azure: #38bdf8;
+  --nz-provider-gcp: #34d399;
+  --nz-provider-alibaba: #f472b6;
+  --nz-provider-oracle: #ef4444;
+  --nz-provider-ibm: #a78bfa;
+}
+
+:root {
+  --nz-gradient: linear-gradient(120deg, var(--nz-accent-1), var(--nz-accent-2));
+
+  /* Bootstrap overrides so its components inherit the active theme. */
+  --bs-body-bg: var(--nz-bg);
+  --bs-body-color: var(--nz-text);
+  --bs-body-font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --bs-primary: var(--nz-accent-1);
+  --bs-link-color: var(--nz-accent-2);
+  --bs-link-hover-color: var(--nz-accent-1);
+  --bs-border-color: var(--nz-border);
+  --bs-emphasis-color: var(--nz-text);
+  --bs-secondary-color: var(--nz-text-muted);
+}

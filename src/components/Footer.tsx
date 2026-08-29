@@ -8,9 +8,11 @@ export default function Footer() {
             <p className="text-muted mb-0">Poetry in Cloud — orchestrating cloud poetry.</p>
           </div>
           <div className="col-md-6 text-md-end">
-            <nav className="d-flex gap-4 justify-content-md-end">
+            {/* Wraps: four links plus gap-4 overflow a 390px viewport in one row. */}
+            <nav className="d-flex flex-wrap column-gap-4 row-gap-2 justify-content-md-end">
               <a href="#features" className="nz-nav-link text-decoration-none">Features</a>
               <a href="#how-it-works" className="nz-nav-link text-decoration-none">How it works</a>
+              <a href="#approvals" className="nz-nav-link text-decoration-none">Approvals</a>
               <a href="#early-access" className="nz-nav-link text-decoration-none">Early access</a>
             </nav>
           </div>

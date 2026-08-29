@@ -24,6 +24,26 @@ Starts the Vite dev server at `http://localhost:5173` with hot module reload.
 npx tsc -b
 ```
 
+## Test
+
+```bash
+npm test
+```
+
+Runs the Vitest suite over the pure logic — map projection and magnification,
+the orchestration run state machine, and waitlist validation. No DOM or visual
+tests; verify the visuals in a browser.
+
+## Regenerate the world map dots
+
+```bash
+npm run build:land-dots
+```
+
+Only needed if the grid spacing or latitude clip in
+`scripts/build-land-dots.mjs` changes. The output, `src/data/landDots.ts`, is
+committed, so a normal build never runs this.
+
 ## Production build
 
 ```bash
@@ -77,6 +97,46 @@ that's needed. Any static host works:
 Since this is a client-side-routed SPA with a single route (`/`), no special
 rewrite/fallback rules are required beyond serving `index.html` for `/`.
 
-No environment variables or backend services are required to build or run
-the site as it stands today — the early-access form is client-side only and
-does not submit anywhere yet.
+## Waitlist → Google Sheets
+
+The site is static, so signups go to a Google Apps Script web app bound to the
+signup spreadsheet. There is no backend and no service-account key.
+
+**One-time setup:**
+
+1. Create a blank Google Sheet to collect signups.
+2. In that sheet: **Extensions → Apps Script**.
+3. Delete the placeholder `Code.gs` contents and paste all of
+   [`scripts/waitlist-appscript.gs`](scripts/waitlist-appscript.gs). Save.
+4. **Deploy → New deployment → Web app**, with:
+   - *Execute as*: **Me**
+   - *Who has access*: **Anyone**
+5. Authorise when prompted, then copy the deployment's `/exec` URL.
+6. Provide it to the build as `VITE_WAITLIST_ENDPOINT`:
+
+   ```bash
+   # .env.local for dev, or the host's env-var settings for production
+   VITE_WAITLIST_ENDPOINT=https://script.google.com/macros/s/AKfy.../exec
+   ```
+
+The script creates a `Waitlist` tab with headers on first submission, and skips
+addresses already on the list.
+
+**If the variable is unset**, the form is replaced by a "waitlist opens shortly"
+notice, so the site never ships a form that silently drops emails. This is the
+current state.
+
+> ⚠️ **The endpoint is public.** It ships in the client bundle and anyone who
+> reads it can POST to it. A honeypot field, a 2.5s minimum form dwell time, and
+> email validation run in the browser *and again inside the Apps Script*, since
+> the browser-side checks are trivially bypassed. That is appropriate for a beta
+> waitlist and not for anything sensitive. To rotate the URL, create a new
+> deployment and update the variable.
+
+## Environment variables
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `VITE_WAITLIST_ENDPOINT` | No | Apps Script `/exec` URL for waitlist signups. Without it the form renders closed. |
+
+Nothing else is required to build or run the site.

@@ -4,8 +4,30 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Nazmo.AI orchestrates service chains across cloud platforms with AI and a visual graph editor — no IaC code required." />
+    <meta name="description" content="Nazmo.AI is an AI-native cloud orchestrator: it designs your service chain, places it across AWS, Azure, GCP and beyond, prices it, waits for your approval, then deploys and keeps it healthy." />
+    <meta name="theme-color" content="#0a0e17" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f7f8fc" media="(prefers-color-scheme: light)" />
     <title>Nazmo.AI — Orchestrating Cloud Poetry</title>
+    <script>
+      // Sets the theme before first paint so there is no flash of the wrong one.
+      // Mirrors the logic in src/theme/ThemeProvider.tsx.
+      (function () {
+        try {
+          var stored = localStorage.getItem('nz-theme')
+          var theme =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light'
+          document.documentElement.setAttribute('data-theme', theme)
+          document.documentElement.setAttribute('data-bs-theme', theme)
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'dark')
+          document.documentElement.setAttribute('data-bs-theme', 'dark')
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -8,48 +8,59 @@ services together, and skip Infrastructure-as-Code entirely. Nazmo is
 currently in private beta.
 
 This repository contains the marketing/landing site for Nazmo.AI — a
-single-page site built with React, TypeScript, Bootstrap, and a D3.js hero
-visualization of the orchestration graph.
+single-page site built with React, TypeScript, and Bootstrap, fronted by an
+interactive world map of live cloud regions and an animated orchestration
+graph.
 
 ## What Nazmo.AI does
 
-- **Visual chain builder** — drag, drop, and connect cloud services on a
-  graphical canvas; the diagram is the architecture.
-- **AI-powered orchestration** — describe the outcome you want and Nazmo.AI
-  assembles, configures, and wires the service chain for you.
-- **Zero IaC required** — no Terraform, no YAML, no boilerplate scripts;
-  Nazmo generates and manages the underlying infrastructure automatically.
-- **Multi-cloud native** — orchestrate services across AWS, Azure, GCP, and
-  beyond from a single canvas.
-- **Live chain monitoring** — watch requests and data flow through the chain
-  in real time, with observability built into the graph itself.
-- **One-click deploy** — turn a visual design into a running, connected
-  service chain instantly, then iterate on the same canvas.
+- **Intent becomes architecture** — describe the outcome in plain language and
+  Nazmo resolves it into a concrete service chain.
+- **Placement across every cloud** — each service lands on the provider and
+  region that fits, weighed on residency, latency, and availability.
+- **Cost modelled before commit** — the whole topology is priced, with the delta
+  against what you run today, before a resource exists.
+- **Approvals that actually block** — the run stops at a gate; a person signs off
+  on the design and the spend, and the decision is recorded.
+- **Deploy without writing IaC** — approved topologies are provisioned in
+  dependency order and rolled back together on failure.
+- **Self-healing at runtime** — faults are localised and repaired with the
+  smallest fix; what cannot be fixed is escalated to a human.
 
-The product flow shown on the site is: **Design → Describe → Orchestrate →
-Observe** — from an empty canvas to a live, observable service chain without
-writing infrastructure code.
+The run shown on the site is: **intent → chain design → placement → cost →
+human approval → deploy → monitor → self-heal or escalate.**
 
 ## Site structure
 
-- `Hero` — headline, pitch, and the animated orchestration graph
-- `Features` — the six core capabilities above
-- `HowItWorks` — the four-step Design/Describe/Orchestrate/Observe flow
+- `Hero` — headline over a full-bleed dot map of 204 real cloud regions that
+  magnifies under the cursor
+- `CoverageStrip` — per-provider region counts and the map colour legend
+- `Features` — the six capabilities above
+- `HowItWorks` — the animated orchestration graph, including the approval gate
+  and the failure branch
+- `HumanInTheLoop` — an example approval request: design, cost delta, blast radius
 - `EarlyAccess` — waitlist signup for the private beta
-- `Footer` / `Navbar` — site navigation and branding
+- `Footer` / `Navbar` — navigation, branding, light/dark toggle
 
 ## Tech stack
 
 - [React](https://react.dev/) 19 + [TypeScript](https://www.typescriptlang.org/)
 - [Vite](https://vitejs.dev/) for dev/build tooling
-- [Bootstrap](https://getbootstrap.com/) 5 for layout and components
-- [D3.js](https://d3js.org/) for the hero orchestration graph visualization
+- [Bootstrap](https://getbootstrap.com/) 5 for layout and native colour modes
+- Canvas 2D for the hero map, hand-rolled SVG for the orchestration graph
+- [Vitest](https://vitest.dev/) for the pure-logic tests
 
 ## Develop
 
 ```bash
 npm install
 npm run dev
+```
+
+## Test
+
+```bash
+npm test
 ```
 
 ## Build
